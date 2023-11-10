@@ -8,11 +8,11 @@ async function make_request(method, rune, params) {
 
 	ln.genkey()
 	await ln.connect_and_init(NODE_ID, WEBSOCKET_ADDR);
-
-	const {result} = await ln.rpc({ rune, method, params })
+	id = "bkprdemo:1";
+	const {result, error} = await ln.rpc({ rune, method, params, id })
 
 	ln.disconnect()
-	return result
+	return { result, error }
 }
 
 async function rpc_call_method(params) {
@@ -22,7 +22,11 @@ async function rpc_call_method(params) {
 async function go() {
 	const res = await rpc_call_method({})
 
-	route_ev = res.events.filter(e => e.tag === 'routed');
+	if (res.error !== undefined) {
+		console.log(result.error)
+		return;
+	}
+	route_ev = res.result.events.filter(e => e.tag === 'routed');
 
 	p = {}
 	nodes = []
